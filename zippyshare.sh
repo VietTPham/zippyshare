@@ -33,7 +33,7 @@ function zippydownload()
         --keep-session-cookies \
         --save-cookies="${cookiefile}" \
         --quiet
-        filename="$( cat "${infofile}" | grep "/d/" | cut -d'/' -f5 | cut -d'"' -f1 | grep -o "[^ ]\+\(\+[^ ]\+\)*" )"
+	filename="$( cat "${infofile}" | grep '<title>' | sed 's#.*- \(.*\)<\/title>.*#\1#' )"
     done
 
     if [ "${retry}" -ge 10 ]
@@ -54,7 +54,7 @@ function zippydownload()
     if [ -f "${infofile}" ]
     then
         # Get url algorithm
-        dlbutton="$( grep 'getElementById..dlbutton...href' "${infofile}" | grep -oE '\([0-9].*\)' )"
+	let dlbutton=" ( $(grep 'getElementById..dlbutton...href' "${infofile}" | sed  's#.*(\([0-9]*\)%.*#\1#' ) % 1000 ) + 11 "
         if [ -n "${dlbutton}" ]
         then
            algorithm="${dlbutton}"
